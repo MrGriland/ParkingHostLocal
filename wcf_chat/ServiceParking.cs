@@ -77,7 +77,7 @@ namespace wcf_Parking
                         orderInfo.OrderInfo_Number = dr[2].ToString();
                         orderInfo.OrderInfo_CreationDate = dr[3].ToString();
                         orderInfo.OrderInfo_EndingDate = dr[4].ToString();
-                        orderInfo.OrderInfo_Sum = (Convert.ToDateTime(dr[4])-Convert.ToDateTime(dr[3])).TotalMinutes*0.03;
+                        orderInfo.OrderInfo_Sum = (Convert.ToDateTime(dr[4])-Convert.ToDateTime(dr[3])).TotalMinutes*0.01;
                         orderInfo.OrderInfo_IsConfirmed = Convert.ToBoolean(dr[5]);
                         orderInfos.Add(orderInfo);
                         //string json = JsonConvert.SerializeObject(orderInfos);
@@ -244,9 +244,9 @@ namespace wcf_Parking
             try
             {
                 using (SqlConnection connection = new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost"))
-                    {
+                {
                         connection.Open();
-                        string insert = "insert into OrderInfo values(@transport,@number,@creator,convert(datetime,@creationdate),convert(datetime,@endingdate),'false')";
+                        string insert = "insert into OrderInfo values(@transport,@number,@creator,convert(datetime,@creationdate),convert(datetime,@endingdate),'false',NULL)";
                         SqlCommand cmd = new SqlCommand(insert, connection);
                         SqlParameter loginParam = new SqlParameter("@transport", transport);
                         cmd.Parameters.Add(loginParam);
@@ -260,12 +260,12 @@ namespace wcf_Parking
                         cmd.Parameters.Add(loginParam);
                         SqlDataReader dr = cmd.ExecuteReader();
                         return true;
-                    }
-        }
-                catch
-                {
-                    return false;
                 }
+            }
+            catch
+            {
+                return false;
+            }
 
         }
 
@@ -310,6 +310,50 @@ namespace wcf_Parking
                 dr.Read();
                 return Convert.ToInt32(dr[1]) - Convert.ToInt32(dr[0]);
             }
+        }
+        public string SendNotifications(string login)
+        {
+            using (SqlConnection connection = new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost"))
+            {
+                orderInfos.Clear();
+                connection.Open();
+                string select = "select o.OrderInfo_ID, t.TransportInfo_Mark, t.TransportInfo_Model, o.OrderInfo_Number, o.OrderInfo_Notification from OrderInfo o join TransportInfo t on o.OrderInfo_Transport = t.TransportInfo_ID join UserInfo u on o.OrderInfo_Creator=u.UserInfo_ID where u.UserInfo_Login = @login and o.OrderInfo_Notification is not null";
+                SqlCommand cmd = new SqlCommand(select, connection);
+                SqlParameter loginParam = new SqlParameter("@login", login);
+                cmd.Parameters.Add(loginParam);
+                SqlDataReader dr = cmd.ExecuteReader();
+                while (dr.Read())
+                {
+                    OrderInfo orderInfo = new OrderInfo();
+                    orderInfo.OrderInfo_ID = Convert.ToInt32(dr[0]);
+                    orderInfo.OrderInfo_TransportMark = dr[1].ToString();
+                    orderInfo.OrderInfo_TransportModel = dr[2].ToString();
+                    orderInfo.OrderInfo_Number = dr[3].ToString();
+                    orderInfo.OrderInfo_Notification = dr[4].ToString();
+                    orderInfos.Add(orderInfo);
+                    //string json = JsonConvert.SerializeObject(orderInfos);
+                    //user.operationContext.GetCallbackChannel<IServerChatCallback>().MsgCallback(json);
+                }
+                return JsonConvert.SerializeObject(orderInfos);
+            }
+        }
+        public bool ClearNotification(int id)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost"))
+                {
+                    orderInfos.Clear();
+                    connection.Open();
+                    string select = "update OrderInfo set OrderInfo_Notification = null where OrderInfo_ID = @id";
+                    SqlCommand cmd = new SqlCommand(select, connection);
+                    SqlParameter idParam = new SqlParameter("@id", id);
+                    cmd.Parameters.Add(idParam);
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    return true;
+                }
+            }
+            catch { return false; }
         }
     }
 }

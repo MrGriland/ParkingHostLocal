@@ -36,6 +36,10 @@ namespace wcf_Parking
         int GetUserID(string login);
         [OperationContract]
         int GetCount();
+        [OperationContract]
+        string SendNotifications(string login);
+        [OperationContract]
+        bool ClearNotification(int id);
     }
 
     public interface IServerParkingCallback

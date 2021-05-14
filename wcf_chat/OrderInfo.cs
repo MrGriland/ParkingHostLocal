@@ -8,6 +8,7 @@ namespace wcf_Parking
 {
     public class OrderInfo
     {
+        public int OrderInfo_ID;
         public int OrderInfo_Transport;
         public string OrderInfo_TransportMark;
         public string OrderInfo_TransportModel;
@@ -17,5 +18,6 @@ namespace wcf_Parking
         public string OrderInfo_EndingDate;
         public double OrderInfo_Sum;
         public bool OrderInfo_IsConfirmed;
+        public string OrderInfo_Notification;
     }
 }
