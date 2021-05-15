@@ -64,7 +64,7 @@ namespace wcf_Parking
                 {
                     orderInfos.Clear();
                     connection.Open();
-                    string select = "select t.TransportInfo_Mark, t.TransportInfo_Model, o.OrderInfo_Number, o.OrderInfo_CreationDate, o.OrderInfo_EndingDate, o.OrderInfo_IsConfirmed from OrderInfo o join TransportInfo t on o.OrderInfo_Transport = t.TransportInfo_ID join UserInfo u on o.OrderInfo_Creator=u.UserInfo_ID where u.UserInfo_Login = @login";
+                    string select = "select t.TransportInfo_Mark, t.TransportInfo_Model, o.OrderInfo_Number, o.OrderInfo_CreationDate, o.OrderInfo_EndingDate, o.OrderInfo_IsConfirmed, o.OrderInfo_ID from OrderInfo o join TransportInfo t on o.OrderInfo_Transport = t.TransportInfo_ID join UserInfo u on o.OrderInfo_Creator=u.UserInfo_ID where u.UserInfo_Login = @login";
                     SqlCommand cmd = new SqlCommand(select, connection);
                     SqlParameter loginParam = new SqlParameter("@login", login);
                     cmd.Parameters.Add(loginParam);
@@ -79,6 +79,7 @@ namespace wcf_Parking
                         orderInfo.OrderInfo_EndingDate = dr[4].ToString();
                         orderInfo.OrderInfo_Sum = (Convert.ToDateTime(dr[4])-Convert.ToDateTime(dr[3])).TotalMinutes*0.01;
                         orderInfo.OrderInfo_IsConfirmed = Convert.ToBoolean(dr[5]);
+                        orderInfo.OrderInfo_ID = Convert.ToInt32(dr[6]);
                         orderInfos.Add(orderInfo);
                         //string json = JsonConvert.SerializeObject(orderInfos);
                         //user.operationContext.GetCallbackChannel<IServerChatCallback>().MsgCallback(json);
@@ -354,6 +355,55 @@ namespace wcf_Parking
                 }
             }
             catch { return false; }
+        }
+        public bool ChangeConfirmed(int transport, string number, string creationdate, string endingdate, int id)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost"))
+                {
+                    connection.Open();
+                    string select = "update OrderInfo set OrderInfo_Transport = @transport, OrderInfo_Number = @number, OrderInfo_CreationDate = convert(datetime,@creationdate), OrderInfo_EndingDate = convert(datetime,@endingdate), OrderInfo_IsConfirmed = 'false' where OrderInfo_ID = @id";
+                    SqlCommand cmd = new SqlCommand(select, connection);
+                    SqlParameter transportParam = new SqlParameter("@transport", transport);
+                    cmd.Parameters.Add(transportParam);
+                    SqlParameter numberParam = new SqlParameter("@number", number);
+                    cmd.Parameters.Add(numberParam);
+                    SqlParameter creationdateParam = new SqlParameter("@creationdate", creationdate);
+                    cmd.Parameters.Add(creationdateParam);
+                    SqlParameter endingdateParam = new SqlParameter("@endingdate", endingdate);
+                    cmd.Parameters.Add(endingdateParam);
+                    SqlParameter idParam = new SqlParameter("@id", id);
+                    cmd.Parameters.Add(idParam);
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    return true;
+                }
+        }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public bool DeleteUnconfirmed(int id)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost"))
+                {
+                    connection.Open();
+                    string select = "delete from OrderInfo where OrderInfo_ID = @id";
+                    SqlCommand cmd = new SqlCommand(select, connection);
+                    SqlParameter idParam = new SqlParameter("@id", id);
+                    cmd.Parameters.Add(idParam);
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

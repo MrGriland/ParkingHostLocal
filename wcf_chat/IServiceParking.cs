@@ -40,6 +40,10 @@ namespace wcf_Parking
         string SendNotifications(string login);
         [OperationContract]
         bool ClearNotification(int id);
+        [OperationContract]
+        bool ChangeConfirmed(int transport, string number, string creationdate, string endingdate, int id);
+        [OperationContract]
+        bool DeleteUnconfirmed(int id);
     }
 
     public interface IServerParkingCallback
