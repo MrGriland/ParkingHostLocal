@@ -14,15 +14,13 @@ namespace wcf_Parking
     public class ServiceParking : IServiceParking
     {
         List<OrderInfo> orderInfos = new List<OrderInfo>();
+        List<UserInfo> userInfos = new List<UserInfo>();
         List<string> marks = new List<string>();
         List<string> models = new List<string>();
         ServerUser user;
         public void Connect()
         {
-             user = new ServerUser() {
-                operationContext = OperationContext.Current
-            };
-
+            user = new ServerUser(){ operationContext = OperationContext.Current };
             Console.WriteLine("Connected");
         }
 
@@ -40,17 +38,23 @@ namespace wcf_Parking
                 {
                     orderInfos.Clear();
                     connection.Open();
-                    string select = "select * from OrderInfo";
+                    string select = "select o.OrderInfo_ID, o.OrderInfo_Transport, o.OrderInfo_Number, o.OrderInfo_Creator, o.OrderInfo_CreationDate, o.OrderInfo_EndingDate, t.TransportInfo_Mark, t.TransportInfo_Model, o.OrderInfo_IsConfirmed, u.UserInfo_Login from OrderInfo o join TransportInfo t on o.OrderInfo_Transport = t.TransportInfo_ID join UserInfo u on o.OrderInfo_Creator = u.UserInfo_ID";
                     SqlCommand cmd = new SqlCommand(select, connection);
                     SqlDataReader dr = cmd.ExecuteReader();
                     while (dr.Read())
                     {
                         OrderInfo orderInfo = new OrderInfo();
+                        orderInfo.OrderInfo_ID = Convert.ToInt32(dr[0]);
                         orderInfo.OrderInfo_Transport = Convert.ToInt32(dr[1]);
                         orderInfo.OrderInfo_Number = dr[2].ToString();
                         orderInfo.OrderInfo_Creator = Convert.ToInt32(dr[3]);
                         orderInfo.OrderInfo_CreationDate = dr[4].ToString();
                         orderInfo.OrderInfo_EndingDate = dr[5].ToString();
+                        orderInfo.OrderInfo_TransportMark = dr[6].ToString();
+                        orderInfo.OrderInfo_TransportModel = dr[7].ToString();
+                        orderInfo.OrderInfo_Sum = (Convert.ToDateTime(dr[5]) - Convert.ToDateTime(dr[4])).TotalMinutes * 0.01;
+                        orderInfo.OrderInfo_IsConfirmed = Convert.ToBoolean(dr[8]);
+                        orderInfo.OrderInfo_CreatorLogin = dr[9].ToString();
                         orderInfos.Add(orderInfo);
                         //string json = JsonConvert.SerializeObject(orderInfos);
                         //user.operationContext.GetCallbackChannel<IServerChatCallback>().MsgCallback(json);
@@ -393,6 +397,52 @@ namespace wcf_Parking
                 {
                     connection.Open();
                     string select = "delete from OrderInfo where OrderInfo_ID = @id";
+                    SqlCommand cmd = new SqlCommand(select, connection);
+                    SqlParameter idParam = new SqlParameter("@id", id);
+                    cmd.Parameters.Add(idParam);
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        public string SendUsers()
+        {
+            using (SqlConnection connection = new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost"))
+            {
+                userInfos.Clear();
+                connection.Open();
+                string select = "select u.UserInfo_ID, u.UserInfo_Login, u.UserInfo_Name, u.UserInfo_Surname, u.UserInfo_IsAdmin, (select count(*) from OrderInfo where OrderInfo_Creator = UserInfo_ID) from UserInfo u";
+                SqlCommand cmd = new SqlCommand(select, connection);
+                SqlDataReader dr = cmd.ExecuteReader();
+                while (dr.Read())
+                {
+                    UserInfo userInfo = new UserInfo();
+                    userInfo.UserInfo_ID = Convert.ToInt32(dr[0]);
+                    userInfo.UserInfo_Login = dr[1].ToString();
+                    userInfo.UserInfo_Name = dr[2].ToString();
+                    userInfo.UserInfo_Surname = dr[3].ToString();
+                    if(Convert.ToBoolean(dr[4]))
+                        userInfo.UserInfo_IsAdmin = "Администратор";
+                    else
+                        userInfo.UserInfo_IsAdmin = "Пользователь";
+                    userInfo.UserInfo_Count = Convert.ToInt32(dr[5]);
+                    userInfos.Add(userInfo);
+                }
+                return JsonConvert.SerializeObject(userInfos);
+            }
+        }
+        public bool TryToConfirm(int id)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost"))
+                {
+                    connection.Open();
+                    string select = "update OrderInfo set OrderInfo_IsConfirmed = 'true' where OrderInfo_ID = @id";
                     SqlCommand cmd = new SqlCommand(select, connection);
                     SqlParameter idParam = new SqlParameter("@id", id);
                     cmd.Parameters.Add(idParam);

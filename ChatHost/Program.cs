@@ -27,8 +27,6 @@ namespace ChatHost
             //    "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
             //key.DeleteValue("ChatHost", false);
             //key.Close();
-            //using (var hostSingle = new ServiceHost(typeof(wcf_Parkingsingle.ServiceParkingSingle)))
-            //{
                 using (var host = new ServiceHost(typeof(wcf_Parking.ServiceParking)))
                 {
                     host.Open();
@@ -40,7 +38,6 @@ namespace ChatHost
                             break;
                     }
                 }
-            //}
         }
     }
 }

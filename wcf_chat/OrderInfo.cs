@@ -14,6 +14,7 @@ namespace wcf_Parking
         public string OrderInfo_TransportModel;
         public string OrderInfo_Number;
         public int OrderInfo_Creator;
+        public string OrderInfo_CreatorLogin;
         public string OrderInfo_CreationDate;
         public string OrderInfo_EndingDate;
         public double OrderInfo_Sum;

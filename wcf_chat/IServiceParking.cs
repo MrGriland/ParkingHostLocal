@@ -44,6 +44,12 @@ namespace wcf_Parking
         bool ChangeConfirmed(int transport, string number, string creationdate, string endingdate, int id);
         [OperationContract]
         bool DeleteUnconfirmed(int id);
+        [OperationContract]
+        bool IsAdmin(string login);
+        [OperationContract]
+        string SendUsers();
+        [OperationContract]
+        bool TryToConfirm(int id);
     }
 
     public interface IServerParkingCallback

@@ -57,10 +57,6 @@
       <Project>{6cefeb18-3b2f-4270-8151-d9cfb0cff816}</Project>
       <Name>wcf_Parking</Name>
     </ProjectReference>
-    <ProjectReference Include="..\wcf_ParkingSingle\wcf_ParkingSingle.csproj">
-      <Project>{e7d59d24-0b99-40db-a9e3-f42c83927ccb}</Project>
-      <Name>wcf_ParkingSingle</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
