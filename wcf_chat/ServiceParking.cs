@@ -13,6 +13,7 @@ namespace wcf_Parking
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerSession)]
     public class ServiceParking : IServiceParking
     {
+        string mainconnstring = "Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost";
         List<OrderInfo> orderInfos = new List<OrderInfo>();
         List<UserInfo> userInfos = new List<UserInfo>();
         List<string> marks = new List<string>();
@@ -34,7 +35,7 @@ namespace wcf_Parking
         {
             if (IsAdmin(login))
             {
-                using (SqlConnection connection = new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost"))
+                using (SqlConnection connection = new SqlConnection(mainconnstring))
                 {
                     orderInfos.Clear();
                     connection.Open();
@@ -64,7 +65,7 @@ namespace wcf_Parking
             }
             else
             {
-                using (SqlConnection connection = new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost"))
+                using (SqlConnection connection = new SqlConnection(mainconnstring))
                 {
                     orderInfos.Clear();
                     connection.Open();
@@ -94,7 +95,7 @@ namespace wcf_Parking
         }
         public bool IsAdmin(string login)
         {
-            using (SqlConnection connection = new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost"))
+            using (SqlConnection connection = new SqlConnection(mainconnstring))
             {
                 connection.Open();
                 string select = "select UserInfo_IsAdmin from UserInfo where UserInfo_Login = @login";
@@ -118,7 +119,7 @@ namespace wcf_Parking
         }
         public bool TryLogin(string login, string password)
         {
-            using (SqlConnection connection = new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost"))
+            using (SqlConnection connection = new SqlConnection(mainconnstring))
             {
                 connection.Open();
                 string select = "select * from UserInfo where UserInfo_Login = @login and UserInfo_Password = @password";
@@ -151,7 +152,7 @@ namespace wcf_Parking
             {
                 try
                 {
-                    using (SqlConnection connection = new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost"))
+                    using (SqlConnection connection = new SqlConnection(mainconnstring))
                     {
                         connection.Open();
                         string insert = "insert into UserInfo values (@login,@password,@name,@surname,'false')";
@@ -185,7 +186,7 @@ namespace wcf_Parking
         }
         public bool SearchLogin(string login)
         {
-            using (SqlConnection connection = new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost"))
+            using (SqlConnection connection = new SqlConnection(mainconnstring))
             {
                 connection.Open();
                 string select = "select * from UserInfo where UserInfo_Login = @login";
@@ -206,7 +207,7 @@ namespace wcf_Parking
 
         public string SendMarks()
         {
-            using (SqlConnection connection = new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost"))
+            using (SqlConnection connection = new SqlConnection(mainconnstring))
             {
                 marks.Clear();
                 connection.Open();
@@ -224,7 +225,7 @@ namespace wcf_Parking
         }
         public string SendModels(string mark)
         {
-            using (SqlConnection connection = new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost"))
+            using (SqlConnection connection = new SqlConnection(mainconnstring))
             {
                 models.Clear();
                 connection.Open();
@@ -248,7 +249,7 @@ namespace wcf_Parking
 
             try
             {
-                using (SqlConnection connection = new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost"))
+                using (SqlConnection connection = new SqlConnection(mainconnstring))
                 {
                         connection.Open();
                         string insert = "insert into OrderInfo values(@transport,@number,@creator,convert(datetime,@creationdate),convert(datetime,@endingdate),'false',NULL)";
@@ -276,7 +277,7 @@ namespace wcf_Parking
 
         public int GetTransport(string mark, string model)
         {
-            using (SqlConnection connection = new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost"))
+            using (SqlConnection connection = new SqlConnection(mainconnstring))
             {
                 connection.Open();
                 string select = "select TransportInfo_ID from TransportInfo where TransportInfo_Mark = @mark and TransportInfo_Model = @model";
@@ -292,7 +293,7 @@ namespace wcf_Parking
         }
         public int GetUserID(string login)
         {
-            using (SqlConnection connection = new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost"))
+            using (SqlConnection connection = new SqlConnection(mainconnstring))
             {
                 connection.Open();
                 string select = "select UserInfo_ID from UserInfo where UserInfo_Login = @login";
@@ -306,7 +307,7 @@ namespace wcf_Parking
         }
         public int GetCount()
         {
-            using (SqlConnection connection = new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost"))
+            using (SqlConnection connection = new SqlConnection(mainconnstring))
             {
                 connection.Open();
                 string select = "select * from ParkingInfo";
@@ -318,7 +319,7 @@ namespace wcf_Parking
         }
         public string SendNotifications(string login)
         {
-            using (SqlConnection connection = new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost"))
+            using (SqlConnection connection = new SqlConnection(mainconnstring))
             {
                 orderInfos.Clear();
                 connection.Open();
@@ -346,7 +347,7 @@ namespace wcf_Parking
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost"))
+                using (SqlConnection connection = new SqlConnection(mainconnstring))
                 {
                     orderInfos.Clear();
                     connection.Open();
@@ -360,14 +361,14 @@ namespace wcf_Parking
             }
             catch { return false; }
         }
-        public bool ChangeConfirmed(int transport, string number, string creationdate, string endingdate, int id)
+        public bool ChangeConfirmed(int transport, string number, string creationdate, string endingdate, bool isConfirmed, int id)
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost"))
+                using (SqlConnection connection = new SqlConnection(mainconnstring))
                 {
                     connection.Open();
-                    string select = "update OrderInfo set OrderInfo_Transport = @transport, OrderInfo_Number = @number, OrderInfo_CreationDate = convert(datetime,@creationdate), OrderInfo_EndingDate = convert(datetime,@endingdate), OrderInfo_IsConfirmed = 'false' where OrderInfo_ID = @id";
+                    string select = "update OrderInfo set OrderInfo_Transport = @transport, OrderInfo_Number = @number, OrderInfo_CreationDate = convert(datetime,@creationdate), OrderInfo_EndingDate = convert(datetime,@endingdate), OrderInfo_IsConfirmed = @isConfirmed where OrderInfo_ID = @id";
                     SqlCommand cmd = new SqlCommand(select, connection);
                     SqlParameter transportParam = new SqlParameter("@transport", transport);
                     cmd.Parameters.Add(transportParam);
@@ -377,6 +378,8 @@ namespace wcf_Parking
                     cmd.Parameters.Add(creationdateParam);
                     SqlParameter endingdateParam = new SqlParameter("@endingdate", endingdate);
                     cmd.Parameters.Add(endingdateParam);
+                    SqlParameter icParam = new SqlParameter("@isConfirmed", isConfirmed);
+                    cmd.Parameters.Add(icParam);
                     SqlParameter idParam = new SqlParameter("@id", id);
                     cmd.Parameters.Add(idParam);
                     SqlDataReader dr = cmd.ExecuteReader();
@@ -393,7 +396,7 @@ namespace wcf_Parking
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost"))
+                using (SqlConnection connection = new SqlConnection(mainconnstring))
                 {
                     connection.Open();
                     string select = "delete from OrderInfo where OrderInfo_ID = @id";
@@ -411,7 +414,7 @@ namespace wcf_Parking
         }
         public string SendUsers()
         {
-            using (SqlConnection connection = new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost"))
+            using (SqlConnection connection = new SqlConnection(mainconnstring))
             {
                 userInfos.Clear();
                 connection.Open();
@@ -439,11 +442,55 @@ namespace wcf_Parking
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost"))
+                using (SqlConnection connection = new SqlConnection(mainconnstring))
                 {
                     connection.Open();
                     string select = "update OrderInfo set OrderInfo_IsConfirmed = 'true' where OrderInfo_ID = @id";
                     SqlCommand cmd = new SqlCommand(select, connection);
+                    SqlParameter idParam = new SqlParameter("@id", id);
+                    cmd.Parameters.Add(idParam);
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        public bool TryToAdmin(bool isadmin,int id)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(mainconnstring))
+                {
+                    connection.Open();
+                    string select = "update UserInfo set UserInfo_IsAdmin = @isadmin where UserInfo_ID = @id";
+                    SqlCommand cmd = new SqlCommand(select, connection);
+                    SqlParameter isParam = new SqlParameter("@isadmin", isadmin);
+                    cmd.Parameters.Add(isParam);
+                    SqlParameter idParam = new SqlParameter("@id", id);
+                    cmd.Parameters.Add(idParam);
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        public bool TryToNotify(string message,int id)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(mainconnstring))
+                {
+                    connection.Open();
+                    string select = "update OrderInfo set OrderInfo_Notification = @message where OrderInfo_ID = @id";
+                    SqlCommand cmd = new SqlCommand(select, connection);
+                    SqlParameter mParam = new SqlParameter("@message", message);
+                    cmd.Parameters.Add(mParam);
                     SqlParameter idParam = new SqlParameter("@id", id);
                     cmd.Parameters.Add(idParam);
                     SqlDataReader dr = cmd.ExecuteReader();
