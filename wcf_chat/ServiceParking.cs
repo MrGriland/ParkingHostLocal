@@ -13,7 +13,8 @@ namespace wcf_Parking
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerSession)]
     public class ServiceParking : IServiceParking
     {
-        string mainconnstring = "Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost";
+        string mainconnstring = SingleStr.GetConStr("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=BGV_CP;Data Source=localhost");
+
         List<OrderInfo> orderInfos = new List<OrderInfo>();
         List<UserInfo> userInfos = new List<UserInfo>();
         List<string> marks = new List<string>();
@@ -501,6 +502,16 @@ namespace wcf_Parking
             {
                 return false;
             }
+        }
+    }
+    class SingleStr
+    {
+        private static string instance;
+        public static string GetConStr(string str)
+        {
+            if (instance == null)
+                instance = str;
+            return instance;
         }
     }
 }

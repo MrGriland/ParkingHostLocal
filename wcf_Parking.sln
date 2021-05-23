@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wcf_Parking", "wcf_chat\wcf_Parking.csproj", "{6CEFEB18-3B2F-4270-8151-D9CFB0CFF816}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatHost", "ChatHost\ChatHost.csproj", "{FC45B876-7B87-4AC9-BA64-47BA9C69BE36}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParkingHost", "ChatHost\ParkingHost.csproj", "{FC45B876-7B87-4AC9-BA64-47BA9C69BE36}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
